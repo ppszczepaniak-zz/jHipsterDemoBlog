@@ -91,8 +91,7 @@ public class PostResource {
     /**
      * {@code GET  /posts} : get all the posts.
      *
-
-     * @param pageable the pagination information.
+     * @param pageable  the pagination information.
      * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of posts in body.
      */
@@ -103,6 +102,7 @@ public class PostResource {
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
+
     /**
      * {@code GET  /posts/:id} : get the "id" post.
      *
@@ -110,9 +110,13 @@ public class PostResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the post, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/posts/{id}")
-    public ResponseEntity<Post> getPost(@PathVariable Long id) {
+    public ResponseEntity<?> getPost(@PathVariable Long id) {
         log.debug("REST request to get Post : {}", id);
         Optional<Post> post = postRepository.findOneWithEagerRelationships(id);
+        if (post.isPresent() && post.get().getBlog() != null &&
+            !post.get().getBlog().getUser().getLogin().equals(SecurityUtils.getCurrentUserLogin().orElse(""))) {
+            return new ResponseEntity<>("error.http.403", HttpStatus.FORBIDDEN);
+        }
         return ResponseUtil.wrapOrNotFound(post);
     }
 
