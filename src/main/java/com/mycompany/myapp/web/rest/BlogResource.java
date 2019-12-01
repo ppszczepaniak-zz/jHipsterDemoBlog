@@ -1,4 +1,4 @@
-package com.mycompany.myapp.web.rest;
+ package com.mycompany.myapp.web.rest;
 
 import com.mycompany.myapp.domain.Blog;
 import com.mycompany.myapp.repository.BlogRepository;
@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional; 
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -90,7 +90,7 @@ public class BlogResource {
     @GetMapping("/blogs")
     public List<Blog> getAllBlogs() {
         log.debug("REST request to get all Blogs");
-        return blogRepository.findAll();
+        return blogRepository.findByUserIsCurrentUser();
     }
 
     /**
